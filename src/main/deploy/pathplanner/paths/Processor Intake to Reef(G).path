@@ -4,15 +4,15 @@
     {
       "anchor": {
         "x": 1.16,
-        "y": 1.1097499999999991
+        "y": 1.11
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0810000000000004,
-        "y": 1.83125
+        "x": 3.080983115186209,
+        "y": 1.8314761750532638
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Processor Intake"
     },
     {
       "anchor": {
@@ -48,7 +48,7 @@
   "folder": "Processor Intake",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 54.0
+    "rotation": 52.0
   },
   "useDefaultConstraints": true
 }
