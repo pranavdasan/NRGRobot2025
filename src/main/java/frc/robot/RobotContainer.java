@@ -68,4 +68,8 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return Autos.none(subsystems);
   }
+
+  public void periodic() {
+    subsystems.periodic();
+  }
 }
