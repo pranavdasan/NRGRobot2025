@@ -64,12 +64,6 @@ public class RobotContainer {
 
     ShuffleboardTab operatorTab = Shuffleboard.getTab("Operator");
     autonomous.addShuffleboardLayout(operatorTab);
-    // ShuffleboardLayout statusLayout =
-    //     operatorTab
-    //         .getLayout("Status", BuiltInLayouts.kGrid)
-    //         .withProperties(Map.of("Number of columns", 1, "Number of rows", 1))
-    //         .withPosition(6, 0)
-    //         .withSize(2, 2);
   }
 
   /**
