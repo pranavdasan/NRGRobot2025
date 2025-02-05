@@ -26,6 +26,14 @@ public class CoralCommands {
         .withName("OuttakeCoral");
   }
 
+  /** Returns a command that intakes coral until it is detected. */
+  public static Command intakeUntilCoralDetected(Subsystems subsystems) {
+    return Commands.sequence(
+        intakeCoral(subsystems),
+        Commands.idle(subsystems.coralRoller).until(() -> subsystems.coralRoller.hasCoral()),
+        Commands.runOnce(subsystems.coralRoller::disable, subsystems.coralRoller));
+  }
+
   /** Returns a command that outtakes coral until it is not detected. */
   public static Command outtakeUntilCoralNotDetected(Subsystems subsystems) {
     return Commands.sequence(
