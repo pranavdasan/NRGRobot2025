@@ -127,7 +127,7 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
   private double currentVoltage;
 
   /** pivotOffset starts from the goal height down. */
-  private double pivotOffset = 0.2; // TODO: fix pivot offset
+  private double pivotOffset = 0;
 
   private BooleanLogEntry logIsSeekingGoal =
       new BooleanLogEntry(DataLogManager.getLog(), "Elevator/isSeekingGoal");
@@ -179,7 +179,7 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
    * @param level
    */
   public void setGoalPosition(ElevatorLevel level) {
-    setGoalPosition(level.getHeight());
+    setGoalPosition(level.getHeight(), level.getPivotOffset());
   }
 
   /**
@@ -187,10 +187,11 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
    *
    * @param height
    */
-  private void setGoalPosition(double height) {
+  private void setGoalPosition(double height, double pivotOffset) {
     isSeekingGoal = true;
     goalState.position = height;
     goalState.velocity = 0;
+    this.pivotOffset = pivotOffset;
     lastState = currentState;
 
     controller.setPID(KP.getValue(), KI.getValue(), KD.getValue());
@@ -291,7 +292,7 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
     controlLayout.add(
         Commands.defer(
                 () ->
-                    Commands.runOnce(() -> this.setGoalPosition(elevatorHeight.getDouble(0)))
+                    Commands.runOnce(() -> this.setGoalPosition(elevatorHeight.getDouble(0), 0))
                         .until(() -> this.atGoalPosition()),
                 Set.of(this))
             .withName("Set Height"));
