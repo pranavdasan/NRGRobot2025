@@ -10,17 +10,20 @@ package frc.robot.parameters;
 import frc.robot.subsystems.Elevator;
 
 public enum ElevatorLevel {
-  STOWED(Elevator.MIN_HEIGHT, 0), // TO-DO: Determine correct values for height and pivot angles
-  L1(0, 0),
-  L2(0, 0),
-  L3(0, 0),
-  L4(0, 0),
+  // TODO change pivotOffsets
+  STOWED(Elevator.MIN_HEIGHT, 0, 0), // TO-DO: Determine correct values for height and pivot angles
+  L1(0, 0, .2),
+  L2(0, 0, .2),
+  L3(0, 0, .2),
+  L4(0, 0, .2),
 
-  AlgaeL2(1.5, 0), // TO-DO: Determine correct values for height and pivot angles (algae removal)
-  AlgaeL3(2.5, 0);
+  AlgaeL2(
+      1.5, 0, .2), // TO-DO: Determine correct values for height and pivot angles (algae removal)
+  AlgaeL3(2.5, 0, .2);
 
   private final double height;
   private final double pivotAngle;
+  private final double pivotOffset;
 
   /**
    * Constructs a variant of this enum.
@@ -28,9 +31,10 @@ public enum ElevatorLevel {
    * @param height The desired height in meters.
    * @param pivotAngle The desired pivot angle in radians.
    */
-  private ElevatorLevel(double height, double pivotAngle) {
+  private ElevatorLevel(double height, double pivotAngle, double pivotOffset) {
     this.height = height;
     this.pivotAngle = pivotAngle;
+    this.pivotOffset = pivotOffset;
   }
 
   /** Returns the desired height in meters. */
@@ -41,5 +45,10 @@ public enum ElevatorLevel {
   /** Returns the desired pivot angle in radians. */
   public double getPivotAngle() {
     return pivotAngle;
+  }
+
+  /** Returns the pivot offset in meters. */
+  public double getPivotOffset() {
+    return pivotOffset;
   }
 }
