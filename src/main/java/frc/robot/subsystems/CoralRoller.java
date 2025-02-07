@@ -37,7 +37,7 @@ public class CoralRoller extends SubsystemBase implements ActiveSubsystem, Shuff
       new RobotPreferences.BooleanValue("CoralRoller", "Enable Tab", false);
 
   private static final double WHEEL_DIAMETER = Units.inchesToMeters(3);
-  private static final double GEAR_RATIO = 25;
+  private static final double GEAR_RATIO = 27;
 
   private static final double METERS_PER_REVOLUTION = (WHEEL_DIAMETER * Math.PI) / GEAR_RATIO;
   private static final double MAX_VELOCITY =
