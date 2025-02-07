@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeCommands;
 import frc.robot.commands.ClimberCommands;
+import frc.robot.commands.CoralAndElevatorCommands;
 import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveUsingController;
@@ -90,16 +91,16 @@ public class RobotContainer {
 
     m_manipulatorController
         .a()
-        .onTrue(ElevatorCommands.goToElevatorLevel(subsystems, ElevatorLevel.L1));
+        .onTrue(CoralAndElevatorCommands.raiseElevatorAndCoralArm(subsystems, ElevatorLevel.L1));
     m_manipulatorController
         .x()
-        .onTrue(ElevatorCommands.goToElevatorLevel(subsystems, ElevatorLevel.L2));
+        .onTrue(CoralAndElevatorCommands.raiseElevatorAndCoralArm(subsystems, ElevatorLevel.L2));
     m_manipulatorController
         .b()
-        .onTrue(ElevatorCommands.goToElevatorLevel(subsystems, ElevatorLevel.L3));
+        .onTrue(CoralAndElevatorCommands.raiseElevatorAndCoralArm(subsystems, ElevatorLevel.L3));
     m_manipulatorController
         .y()
-        .onTrue(ElevatorCommands.goToElevatorLevel(subsystems, ElevatorLevel.L4));
+        .onTrue(CoralAndElevatorCommands.raiseElevatorAndCoralArm(subsystems, ElevatorLevel.L4));
     m_manipulatorController.rightBumper().whileTrue(AlgaeCommands.intakeAlgae(subsystems));
     m_manipulatorController.rightBumper().onFalse(AlgaeCommands.stopAndStowIntake(subsystems));
     m_manipulatorController.leftBumper().whileTrue(AlgaeCommands.outtakeAlgae(subsystems));

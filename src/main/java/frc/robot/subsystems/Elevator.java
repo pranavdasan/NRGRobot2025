@@ -126,6 +126,9 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
   private boolean atLowerLimit;
   private double currentVoltage;
 
+  /** pivotOffset starts from the goal height down. */
+  private double pivotOffset = 0.2; // TODO: fix pivot offset
+
   private BooleanLogEntry logIsSeekingGoal =
       new BooleanLogEntry(DataLogManager.getLog(), "Elevator/isSeekingGoal");
   private DoubleLogEntry logCurrentVelocity =
@@ -156,6 +159,11 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
     updateSensorState();
     SmartDashboard.putData("Elevator Sim", mechanism2d);
     controller.setTolerance(0.01);
+  }
+
+  /** Returns elevator height. */
+  public double getHeight() {
+    return this.currentState.position;
   }
 
   @Override
@@ -195,6 +203,11 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
   /** Returns whether the elevator is at goal position. */
   public boolean atGoalPosition() {
     return controller.atGoal();
+  }
+
+  /** Returns whether the elevator is above the pivot position. */
+  public boolean abovePivotPosition() {
+    return goalState.position - pivotOffset <= currentState.position;
   }
 
   private void updateSensorState() {
