@@ -72,4 +72,10 @@ public final class CoralCommands {
             Commands.runOnce(() -> subsystems.coralArm.disable(), subsystems.coralArm))
         .withName("StowArm");
   }
+
+  public static Command waitForElevatorToReachPivotHeight(Subsystems subsystems) {
+    return Commands.idle(subsystems.coralArm)
+        .until(subsystems.elevator::abovePivotPosition)
+        .withName("waitForElevatorToReachPivotHeight");
+  }
 }
