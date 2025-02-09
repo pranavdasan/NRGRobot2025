@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.7805,
-        "y": 7.595440051020407
+        "x": 0.6825,
+        "y": 1.295
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.029971590909091,
-        "y": 7.5100710227272724
+        "x": 2.73,
+        "y": 0.6124999999999999
       },
       "isLocked": false,
-      "linkedName": "Barge Side Start"
+      "linkedName": "Inner Processor Intake"
     },
     {
       "anchor": {
-        "x": 6.2521875,
-        "y": 7.37046875
+        "x": 3.2366803278688523,
+        "y": 4.43857581967213
       },
       "prevControl": {
-        "x": 6.860454545454546,
-        "y": 7.48015625
+        "x": 2.4764999999980515,
+        "y": 4.073749999998064
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Reef(A)"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 54.090276920822355
   },
   "useDefaultConstraints": true
 }
