@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.nrg948.preferences.RobotPreferences;
 import com.nrg948.preferences.RobotPreferencesLayout;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,7 +41,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Subsystems subsystems = new Subsystems();
   private final RobotAutonomous autonomous =
-      new RobotAutonomous(subsystems, null); // TODO: figure out what rotaion feedback override.
+      new RobotAutonomous(subsystems, null); // TODO: figure out what rotaion
+  // feedback override.
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -48,6 +50,7 @@ public class RobotContainer {
 
   private final CommandXboxController m_manipulatorController =
       new CommandXboxController(OperatorConstants.MANIPULATOR_CONTROLLER_PORT);
+  private final Timer coastModeTimer = new Timer();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -64,6 +67,22 @@ public class RobotContainer {
 
   public void disabledInit() {
     subsystems.disable();
+    coastModeTimer.restart();
+  }
+
+  public void disabledPeriodic() {
+    if (coastModeTimer.hasElapsed(3)) {
+      subsystems.drivetrain.setBrakeMode(false);
+      coastModeTimer.stop();
+    }
+  }
+
+  public void autonomousInit() {
+    subsystems.drivetrain.setBrakeMode(true);
+  }
+
+  public void teleopInit() {
+    subsystems.drivetrain.setBrakeMode(true);
   }
 
   private void initShuffleboard() {

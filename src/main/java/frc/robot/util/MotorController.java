@@ -26,4 +26,7 @@ public interface MotorController extends edu.wpi.first.wpilibj.motorcontrol.Moto
 
   /** Returns the reverse limit switch. */
   LimitSwitch getReverseLimitSwitch();
+
+  /** Sets Brake Mode. */
+  void setBrakeMode(boolean brakeMode);
 }

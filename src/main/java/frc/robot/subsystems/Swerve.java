@@ -68,9 +68,8 @@ import java.util.function.Supplier;
     type = "Grid Layout",
     gridColumns = 3,
     gridRows = 2)
-public class Swerve extends SubsystemBase implements ShuffleboardProducer {
+public class Swerve extends SubsystemBase implements ActiveSubsystem, ShuffleboardProducer {
   private static final DataLog LOG = DataLogManager.getLog();
-
   private static final Rotation2d ROTATE_180_DEGREES = Rotation2d.fromDegrees(180);
 
   @RobotPreferencesValue(column = 0, row = 0)
@@ -142,7 +141,9 @@ public class Swerve extends SubsystemBase implements ShuffleboardProducer {
   private Rotation2d orientation = new Rotation2d();
   private Pose2d lastVisionMeasurement = new Pose2d();
   private Supplier<Optional<Rotation2d>> targetOrientationSupplier =
-      () -> Optional.empty(); // absolute location to keep the robot oriented to tag
+      () -> Optional.empty(); // absolute location to
+  // keep the robot oriented
+  // to tag
 
   private DoubleLogEntry poseXLog = new DoubleLogEntry(LOG, "/Swerve/Pose X");
   private DoubleLogEntry poseYLog = new DoubleLogEntry(LOG, "/Swerve/Pose Y");
@@ -217,6 +218,14 @@ public class Swerve extends SubsystemBase implements ShuffleboardProducer {
       Pose2d visionMeasurment, double timestamp, Matrix<N3, N1> stdDevs) {
     odometry.addVisionMeasurement(visionMeasurment, timestamp, stdDevs);
     lastVisionMeasurement = visionMeasurment;
+  }
+
+  /*
+   * Disable robot auto-orientation.
+   */
+  @Override
+  public void disable() {
+    disableAutoOrientation();
   }
 
   /**
@@ -493,6 +502,18 @@ public class Swerve extends SubsystemBase implements ShuffleboardProducer {
     poseXLog.append(robotPose.getX());
     poseYLog.append(robotPose.getY());
     poseAngleLog.append(robotPose.getRotation().getDegrees());
+  }
+
+  public void setBrakeMode(boolean brakeMode) {
+    frontLeftDriveMotor.setBrakeMode(brakeMode);
+    frontRightDriveMotor.setBrakeMode(brakeMode);
+    backLeftDriveMotor.setBrakeMode(brakeMode);
+    backRightDriveMotor.setBrakeMode(brakeMode);
+
+    frontLeftSteeringMotor.setBrakeMode(brakeMode);
+    frontRightSteeringMotor.setBrakeMode(brakeMode);
+    backLeftSteeringMotor.setBrakeMode(brakeMode);
+    backRightSteeringMotor.setBrakeMode(brakeMode);
   }
 
   /** Adds a tab for swerve drive in Shuffleboard. */
