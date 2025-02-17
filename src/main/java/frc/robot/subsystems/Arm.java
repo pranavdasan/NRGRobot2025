@@ -28,6 +28,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -40,6 +41,9 @@ import frc.robot.util.MotorUtils;
 
 @RobotPreferencesLayout(groupName = "Arm", row = 1, column = 0, width = 1, height = 1)
 public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardProducer {
+  private static final double ERROR_MARGIN = Math.toRadians(2);
+  private static final double ERROR_TIME = 1.0;
+
   @RobotPreferencesValue
   public static final RobotPreferences.BooleanValue ENABLE_TAB =
       new RobotPreferences.BooleanValue("Arm", "Enable Tab", false);
@@ -51,11 +55,13 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
 
   private final TalonFX motor;
   private final DutyCycleEncoder absoluteEncoder;
+  private final Timer stuckTimer = new Timer();
   private double currentAngle = 0;
   private double currentAbsoluteAngle = 0;
   private double currentVelocity = 0;
   private double goalAngle = 0;
   private boolean enabled;
+  private boolean hasError = false;
 
   private MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
 
@@ -123,10 +129,31 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
     currentAngle = motor.getPosition().refresh().getValueAsDouble() * 2 * Math.PI;
     currentVelocity = motor.getVelocity().refresh().getValueAsDouble() * 2 * Math.PI;
     currentAbsoluteAngle = absoluteEncoder.get();
+    checkError();
 
     logCurrentAngle.append(currentAngle);
     logCurrentVelocity.append(currentVelocity);
     logCurrentAbsoluteAngle.append(currentAbsoluteAngle);
+  }
+
+  /**
+   * Checks if the arm is beyond its maximum and minimum angles by 2.0 degrees or is taking more
+   * than 1.0 second to be within 2.0 degrees of the goal angle.
+   */
+  private void checkError() {
+    if (MathUtil.isNear(goalAngle, currentAngle, ERROR_MARGIN)) {
+      stuckTimer.stop();
+      stuckTimer.reset();
+    } else {
+      if (!stuckTimer.isRunning()) {
+        stuckTimer.restart();
+      }
+    }
+
+    hasError =
+        currentAngle > MAX_ANGLE + ERROR_MARGIN
+            || currentAngle < MIN_ANGLE - ERROR_MARGIN
+            || stuckTimer.hasElapsed(ERROR_TIME);
   }
 
   /** Sets the goal angle in radians and enables periodic control. */
@@ -143,6 +170,11 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
   /** Returns whether the coral arm is at goal angle. */
   public boolean atGoalAngle() {
     return Math.abs(goalAngle - currentAngle) <= Math.toRadians(1);
+  }
+
+  /** Returns whether the coral arm has an error. */
+  public boolean hasError() {
+    return hasError;
   }
 
   /** Disables periodic control. */

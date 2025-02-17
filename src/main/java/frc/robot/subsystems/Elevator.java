@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.nrg948.preferences.RobotPreferences;
 import com.nrg948.preferences.RobotPreferencesLayout;
 import com.nrg948.preferences.RobotPreferencesValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -47,6 +48,9 @@ import java.util.Set;
 
 @RobotPreferencesLayout(groupName = "Elevator", row = 0, column = 5, width = 2, height = 3)
 public class Elevator extends SubsystemBase implements ActiveSubsystem, ShuffleboardProducer {
+  private static final double GOAL_POSITION_TOLERANCE = 0.01;
+  private static final double POSITION_ERROR_MARGIN = 0.05; // meters
+  private static final double POSITION_ERROR_TIME = 2.0;
 
   private static final DataLog LOG = DataLogManager.getLog();
 
@@ -130,8 +134,10 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
   private final TrapezoidProfile profile = new TrapezoidProfile(CONSTRAINTS);
   private final ProfiledPIDController controller =
       new ProfiledPIDController(KP.getValue(), KI.getValue(), KD.getValue(), CONSTRAINTS);
+  private final Timer stuckTimer = new Timer();
 
   private boolean isSeekingGoal;
+  private boolean hasError;
   private final TrapezoidProfile.State currentState = new TrapezoidProfile.State();
   private final TrapezoidProfile.State goalState = new TrapezoidProfile.State();
   private TrapezoidProfile.State lastState = currentState;
@@ -162,7 +168,7 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
   public Elevator() {
     updateSensorState();
     SmartDashboard.putData("Elevator Sim", mechanism2d);
-    controller.setTolerance(0.01);
+    controller.setTolerance(GOAL_POSITION_TOLERANCE);
   }
 
   /** Returns elevator height. */
@@ -228,6 +234,7 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
     }
     currentState.position += MIN_HEIGHT;
 
+    checkError();
     atUpperLimit = currentState.position >= MAX_HEIGHT;
     atLowerLimit = currentState.position <= DISABLE_HEIGHT;
 
@@ -244,6 +251,23 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
   public void setIdleMode(MotorIdleMode idleMode) {
     mainMotor.setIdleMode(idleMode);
     follower.setIdleMode(idleMode);
+  }
+
+  private void checkError() {
+    if (MathUtil.isNear(goalState.position, currentState.position, POSITION_ERROR_MARGIN)) {
+      stuckTimer.stop();
+      stuckTimer.reset();
+    } else {
+      if (!stuckTimer.isRunning()) {
+        stuckTimer.restart();
+      }
+    }
+
+    hasError = stuckTimer.hasElapsed(POSITION_ERROR_TIME);
+  }
+
+  public boolean hasError() {
+    return hasError;
   }
 
   @Override

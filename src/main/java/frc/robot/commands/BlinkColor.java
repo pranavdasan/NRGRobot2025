@@ -21,18 +21,15 @@ public final class BlinkColor extends Command {
 
   private final LEDSubsystem led;
   private final Colors color;
-  private final double duration;
   private final Timer blinkTimer = new Timer();
-  private final Timer endTimer = new Timer();
   private boolean isOn;
 
   /** Creates a new BlinkColor. */
-  public BlinkColor(LEDSubsystem led, Colors color, double duration) {
+  public BlinkColor(LEDSubsystem led, Colors color) {
     setName(String.format("BlinkColor(%s)", color.name()));
 
     this.led = led;
     this.color = color;
-    this.duration = duration;
 
     addRequirements(led);
   }
@@ -44,8 +41,6 @@ public final class BlinkColor extends Command {
     isOn = true;
     blinkTimer.reset();
     blinkTimer.start();
-    endTimer.reset();
-    endTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -53,11 +48,7 @@ public final class BlinkColor extends Command {
   public void execute() {
 
     if (blinkTimer.advanceIfElapsed(BLINK_TIME)) {
-      if (isOn) {
-        led.fillAndCommitColor(BLACK);
-      } else {
-        led.fillAndCommitColor(color);
-      }
+      led.fillAndCommitColor(isOn ? color : BLACK);
       isOn = !isOn;
     }
   }
@@ -66,12 +57,11 @@ public final class BlinkColor extends Command {
   @Override
   public void end(boolean interrupted) {
     blinkTimer.stop();
-    endTimer.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endTimer.hasElapsed(duration);
+    return false;
   }
 }
