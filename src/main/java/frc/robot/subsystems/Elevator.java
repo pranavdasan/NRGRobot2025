@@ -40,7 +40,6 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.parameters.ElevatorLevel;
 import frc.robot.parameters.ElevatorParameters;
-import frc.robot.util.MotorController;
 import frc.robot.util.MotorDirection;
 import frc.robot.util.MotorIdleMode;
 import frc.robot.util.RelativeEncoder;
@@ -119,9 +118,9 @@ public class Elevator extends SubsystemBase implements ActiveSubsystem, Shuffleb
           MotorIdleMode.BRAKE,
           METERS_PER_REVOLUTION);
 
-  @SuppressWarnings("unused")
-  private MotorController follower =
-      mainMotor.createFollower(PARAMETERS.getValue().getFollowerDeviceID(), false);
+  // @SuppressWarnings("unused")
+  // private MotorController follower =
+  //     mainMotor.createFollower(PARAMETERS.getValue().getFollowerDeviceID(), false);
 
   private RelativeEncoder encoder = mainMotor.getEncoder();
 
