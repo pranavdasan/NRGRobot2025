@@ -34,6 +34,13 @@ import org.javatuples.LabelValue;
 
 /** A namespace for autonomous command factory methods. */
 public final class Autos {
+  private static final String AUTO_FILE_TYPE = ".auto";
+
+  private static final File AUTOS_DIR =
+      new File(Filesystem.getDeployDirectory(), "pathplanner/autos");
+
+  private static final HashMap<String, Command> autosMap = new HashMap<String, Command>();
+
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
@@ -41,21 +48,20 @@ public final class Autos {
   /** Returns an autonomous command that does nothing. */
   @AutonomousCommandMethod(name = "None", isDefault = true)
   public static Command none(Subsystems subsystem) {
-    return Commands.none();
+    return Commands.none().withName("None");
   }
 
   /**
    * Returns a collection of label-value pairs mapping autonomous routine names to autonomous
-   * commands define using PPPathplannner.
+   * commands define using Pathplannner.
    */
   @AutonomousCommandGenerator
   public static Collection<LabelValue<String, Command>> generatePathPlannerAutos(
       Subsystems subsystems) {
-    File autosDir = new File(Filesystem.getDeployDirectory(), "pathplanner/autos");
-    return Arrays.stream(autosDir.listFiles((file, name) -> name.endsWith(".auto")))
+    return Arrays.stream(AUTOS_DIR.listFiles((file, name) -> name.endsWith(AUTO_FILE_TYPE)))
         .map((file) -> file.getName().split("\\.")[0])
         .sorted()
-        .map(name -> new LabelValue<>(name, getPathPlannerAuto(subsystems, name)))
+        .map(name -> new LabelValue<>(name, generatePathPlannerAuto(subsystems, name)))
         .toList();
   }
 
@@ -66,12 +72,42 @@ public final class Autos {
    * @param name Name of the PathPlanner auto.
    * @return The PathPlanner auto command.
    */
-  public static Command getPathPlannerAuto(Subsystems subsystems, String name) {
+  public static Command generatePathPlannerAuto(Subsystems subsystems, String name) {
     NamedCommands.registerCommands(getPathplannerEventMap(subsystems, name));
 
     Set<Subsystem> requirements = new HashSet<>(Arrays.asList(subsystems.getManipulators()));
     requirements.add(subsystems.drivetrain);
-    return Commands.defer(() -> newPathPlannerAuto(name), requirements).withName(name);
+    return Commands.defer(() -> getPathPlannerAuto(name), requirements).withName(name);
+  }
+
+  /**
+   * Returns the PathPlanner auto command from the autosMap, creating one if it hasn't already been
+   * preloaded.
+   *
+   * @param name Name of the PathPlanner auto.
+   * @return The PathPlanner auto command.
+   */
+  private static Command getPathPlannerAuto(String name) {
+    Command autoCommand = autosMap.get(name);
+    if (autoCommand == null) {
+      autoCommand = newPathPlannerAuto(name);
+    }
+    return autoCommand;
+  }
+
+  /**
+   * Preloads the specified PathPlanner command.
+   *
+   * @param auto The auto to preload.
+   */
+  public static void preloadAuto(Command auto) {
+    String autoName = auto.getName();
+    File autoFile = new File(AUTOS_DIR, autoName + AUTO_FILE_TYPE);
+
+    if (autoFile.exists()) {
+      Command autoCommand = newPathPlannerAuto(autoName);
+      autosMap.put(autoName, autoCommand);
+    }
   }
 
   /**
