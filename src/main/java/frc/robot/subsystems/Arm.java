@@ -52,6 +52,7 @@ import frc.robot.util.TalonFXAdapter;
     gridColumns = 4,
     gridRows = 1)
 public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardProducer {
+  private static final double RADIANS_PER_ROTATION = 2 * Math.PI;
   private static final double ERROR_MARGIN = Math.toRadians(2);
   private static final double ERROR_TIME = 1.0;
 
@@ -131,8 +132,8 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
     Slot0Configs slot0Configs = talonFXConfigs.Slot0;
     slot0Configs.kS = parameters.getkS();
     // Need to convert kV and kA from radians to rotations.
-    slot0Configs.kV = parameters.getkV() * 2 * Math.PI;
-    slot0Configs.kA = parameters.getkA() * 2 * Math.PI;
+    slot0Configs.kV = parameters.getkV() * RADIANS_PER_ROTATION;
+    slot0Configs.kA = parameters.getkA() * RADIANS_PER_ROTATION;
     slot0Configs.kG = 0.9;
     slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
     slot0Configs.kP = 80.0;
@@ -142,31 +143,30 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
     // set Motion Magic settings
     MotionMagicConfigs motionMagicConfigs = talonFXConfigs.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity =
-        0.3 * parameters.getMaxAngularSpeed() / (2 * Math.PI);
+        0.3 * parameters.getMaxAngularSpeed() / RADIANS_PER_ROTATION;
     motionMagicConfigs.MotionMagicAcceleration =
-        0.015625 * parameters.getMaxAngularAcceleration() / (2 * Math.PI);
+        0.015625 * parameters.getMaxAngularAcceleration() / RADIANS_PER_ROTATION;
 
     TalonFXConfigurator configurator = talonFX.getConfigurator();
 
     configurator.apply(talonFXConfigs);
-    motor = new TalonFXAdapter(talonFX, talonFXConfigs.MotorOutput, 2 * Math.PI);
+
+    String logPrefix = "/" + parameters.getArmName();
+
+    motor =
+        new TalonFXAdapter(logPrefix, talonFX, talonFXConfigs.MotorOutput, RADIANS_PER_ROTATION);
     relativeEncoder = motor.getEncoder();
     relativeEncoder.setPosition(absoluteEncoder.getAngle());
 
-    logCurrentAngle =
-        new DoubleLogEntry(LOG, String.format("/%s/Current Angle", parameters.getArmName()));
-    logCurrentAbsoluteAngle =
-        new DoubleLogEntry(
-            LOG, String.format("/%s/Current Absolute Angle", parameters.getArmName()));
-    logCurrentVelocity =
-        new DoubleLogEntry(LOG, String.format("/%s/Current Velocity", parameters.getArmName()));
-    logGoalAngle =
-        new DoubleLogEntry(LOG, String.format("/%s/Goal Angle", parameters.getArmName()));
-    logEnabled = new BooleanLogEntry(LOG, String.format("/%s/Enabled", parameters.getArmName()));
+    logCurrentAngle = new DoubleLogEntry(LOG, logPrefix + "/Current Angle");
+    logCurrentAbsoluteAngle = new DoubleLogEntry(LOG, logPrefix + "/Current Absolute Angle");
+    logCurrentVelocity = new DoubleLogEntry(LOG, logPrefix + "/Current Velocity");
+    logGoalAngle = new DoubleLogEntry(LOG, logPrefix + "/Goal Angle");
+    logEnabled = new BooleanLogEntry(LOG, logPrefix + "/Enabled");
   }
 
-  /** Updates the sensor state. */
-  private void updateSensorState() {
+  /** Updates and logs the current sensor states. */
+  private void updateTelemetry() {
     currentAngle = relativeEncoder.getPosition();
     currentVelocity = relativeEncoder.getVelocity();
     currentAbsoluteAngle = absoluteEncoder.getAngle();
@@ -175,6 +175,7 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
     logCurrentAngle.append(currentAngle);
     logCurrentVelocity.append(currentVelocity);
     logCurrentAbsoluteAngle.append(currentAbsoluteAngle);
+    motor.logTelemetry();
   }
 
   /**
@@ -203,7 +204,7 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
     goalAngle = angle;
     enabled = true;
     // set target position to 100 rotations
-    talonFX.setControl(motionMagicRequest.withPosition(angle / (2 * Math.PI)));
+    talonFX.setControl(motionMagicRequest.withPosition(angle / RADIANS_PER_ROTATION));
     logGoalAngle.append(angle);
     logEnabled.update(enabled);
   }
@@ -232,7 +233,7 @@ public class Arm extends SubsystemBase implements ActiveSubsystem, ShuffleboardP
 
   @Override
   public void periodic() {
-    updateSensorState();
+    updateTelemetry();
   }
 
   @Override
