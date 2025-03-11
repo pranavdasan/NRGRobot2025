@@ -11,7 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Barge Side Start to Reef(L)"
+                  "pathName": "Barge Start to Reef(G)"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Elevator L4"
                 }
               }
             ]
@@ -36,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Reef(L) to Inner Barge Intake"
+                  "pathName": "Reef(G) to Outer Barge Intake"
                 }
               },
               {
@@ -55,16 +61,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Inner Barge Intake to Reef(A)"
-                }
-              }
-            ]
+            "pathName": "Outer Barge Intake to Reef(K)"
           }
         },
         {
@@ -86,7 +85,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Reef(A) to Inner Barge Intake"
+                  "pathName": "Reef(K) to Outer Barge Intake"
                 }
               },
               {
@@ -105,16 +104,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Inner Barge Intake to Reef(B)"
-                }
-              }
-            ]
+            "pathName": "Outer Barge Intake to Reef(L)"
           }
         },
         {

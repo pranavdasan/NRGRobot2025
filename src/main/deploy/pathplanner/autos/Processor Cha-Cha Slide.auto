@@ -11,16 +11,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Barge Side Start to Reef(L)"
+                  "pathName": "Processor Start to Reef(H)"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Elevator L4"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
           }
         },
         {
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Reef(L) to Inner Barge Intake"
+                  "pathName": "Reef(H) to Outer Processor Intake"
                 }
               },
               {
@@ -61,16 +61,10 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Inner Barge Intake to Reef(A)"
+                  "pathName": "Outer Processor Intake to Reef(D)"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
           }
         },
         {
@@ -86,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Reef(A) to Inner Barge Intake"
+                  "pathName": "Reef(D) to Outer Processor Intake"
                 }
               },
               {
@@ -111,16 +105,10 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Inner Barge Intake to Reef(B)"
+                  "pathName": "Outer Processor Intake to Reef(C)"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
           }
         },
         {

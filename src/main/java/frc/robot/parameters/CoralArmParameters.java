@@ -35,12 +35,13 @@ public enum CoralArmParameters implements ArmParameters {
   CompetitionBase2025(
       MotorParameters.KrakenX60,
       1.25,
-      9.0 * 54.0 / 36.0,
+      27.0 * 54.0 / 36.0,
       0.315,
       COMPETITION_CORAL_ARM_MOTOR_ID,
       CORAL_ARM_ABSOLUTE_ENCODER,
       true, // The absolute encoder is inverted.
-      Math.toRadians(34.4),
+      // Math.toRadians(34.4),
+      Math.toRadians(-92), // TODO: this works around disconected absolute encoder
       Math.toRadians(10),
       Math.toRadians(95),
       0.1);

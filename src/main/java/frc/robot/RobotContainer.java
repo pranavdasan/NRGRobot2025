@@ -30,11 +30,15 @@ import com.nrg948.preferences.RobotPreferences;
 import com.nrg948.preferences.RobotPreferences.EnumValue;
 import com.nrg948.preferences.RobotPreferencesLayout;
 import com.nrg948.preferences.RobotPreferencesValue;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.CoralCommands;
+import frc.robot.commands.CoralRollerWithController;
 import frc.robot.commands.DriveUsingController;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.FlameCycle;
@@ -112,8 +117,8 @@ public class RobotContainer {
     subsystems.drivetrain.setDefaultCommand(
         new DriveUsingController(subsystems, m_driverController));
 
-    // subsystems.coralRoller.setDefaultCommand(
-    //    new CoralRollerWithController(subsystems, m_manipulatorController));
+    subsystems.coralRoller.setDefaultCommand(
+        new CoralRollerWithController(subsystems, m_manipulatorController));
 
     subsystems.statusLEDs.setDefaultCommand(new FlameCycle(subsystems.statusLEDs));
 
@@ -152,8 +157,25 @@ public class RobotContainer {
 
     subsystems.initShuffleboard();
 
+    VideoSource video =
+        new HttpCamera(
+            "photonvision_Port_1190_Output_MJPEG_Server",
+            "http://photonvision.local:1190/stream.mjpg",
+            HttpCameraKind.kMJPGStreamer);
+
     ShuffleboardTab operatorTab = Shuffleboard.getTab("Operator");
     autonomous.addShuffleboardLayout(operatorTab);
+
+    operatorTab
+        .add("Front Camera", video)
+        .withWidget(BuiltInWidgets.kCameraStream)
+        .withPosition(2, 0)
+        .withSize(4, 3);
+
+    operatorTab
+        .addBoolean("Has Coral", () -> subsystems.coralRoller.hasCoral())
+        .withSize(2, 2)
+        .withPosition(0, 2);
   }
 
   /**

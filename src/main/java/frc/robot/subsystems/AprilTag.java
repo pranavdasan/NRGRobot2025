@@ -96,8 +96,8 @@ public class AprilTag extends SubsystemBase implements ShuffleboardProducer {
           Optional.of(PRACTICE_ROBOT_TO_BACK_CAMERA));
   public static final VisionParameters COMPETITION_VISION_PARAMS =
       new VisionParameters(
-          Optional.of(COMPETITION_ROBOT_TO_FRONT_CAMERA),
-          Optional.of(COMPETITION_ROBOT_TO_BACK_CAMERA));
+          Optional.of(COMPETITION_ROBOT_TO_FRONT_CAMERA), //
+          Optional.empty()); // Optional.of(COMPETITION_ROBOT_TO_BACK_CAMERA));
 
   @RobotPreferencesValue(column = 0, row = 0)
   public static final RobotPreferences.BooleanValue ENABLED =
@@ -105,7 +105,7 @@ public class AprilTag extends SubsystemBase implements ShuffleboardProducer {
 
   @RobotPreferencesValue(column = 1, row = 0)
   public static final RobotPreferences.BooleanValue ENABLE_TAB =
-      new RobotPreferences.BooleanValue("AprilTag", "Enable Tab", true);
+      new RobotPreferences.BooleanValue("AprilTag", "Enable Tab", false);
 
   private enum PoseEstimationStrategy {
     AverageBestTargets(PoseStrategy.AVERAGE_BEST_TARGETS),
